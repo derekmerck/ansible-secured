@@ -1,0 +1,43 @@
+---
+# CERTBOT tasks
+
+# Have to get the nginx server up without a cert, or with a self-signed cert
+# to setup the infrastructure first.
+
+- name: Create .well-known with full perms for certbot
+  file:
+    path: "{{ secured_cert_dir }}/.well-known/acme-challenge"
+    state: directory
+    mode: 0777
+  become: yes
+
+- name: Run certbot in docker
+  docker_container:
+    name: certbot
+    image: certbot/certbot:latest
+    volumes:
+      - "/etc/letsencrypt:/etc/letsencrypt"
+      - "/var/lib/letsencrypt:/var/lib/letsencrypt"
+      - "{{ secured_cert_dir }}:{{ secured_cert_dir }}"
+    # Add "--force-renewal" to move from staging to production
+    command: "certonly --webroot --email {{ secured_admin_email }} -d {{ secured_host_name }} -w {{ secured_cert_dir }} -n --agree-tos --server {{ secured_certbot_server }}"
+    state: started
+    env:
+      TZ: America/New_York
+
+- name: Wait on certbot to result
+  command: docker wait certbot
+
+- name: Copy the certbot cert to the nginx folder
+  copy:
+    src: "/etc/letsencrypt/live/{{ secured_host_name }}/fullchain.pem"
+    dest: "{{ secured_cert_dir }}/crt/{{ secured_host_name }}.pem"
+    remote_src: yes
+    force: yes
+
+- name: Copy the certbot key to the nginx folder
+  copy:
+    src: "/etc/letsencrypt/live/{{ secured_host_name }}/privkey.pem"
+    dest: "{{ secured_cert_dir }}/private/{{ secured_host_name }}.pem"
+    remote_src: yes
+    force: yes

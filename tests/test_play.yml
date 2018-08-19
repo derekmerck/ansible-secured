@@ -1,0 +1,13 @@
+---
+- hosts: vagrant
+  roles:
+    - role: nginx-docker
+      # nginx_secured: True
+      nginx_www_host: dev.mercks.net
+      # Run unsecured to have certificate issued
+
+    - role: secured
+      secured_cert_type:   "certbot"
+      secured_common_name: mercks.net
+      secured_host:        dev.mercks.net
+      secured_admin_email: derek.merck@gmail.com

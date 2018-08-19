@@ -1,0 +1,19 @@
+---
+# defaults file for secured
+
+config_dir: "/config"
+
+secured_cert_type:      "selfsigned"
+secured_base_config_dir: "/config"
+secured_cert_dir:       "{{ config_dir }}/certs"
+
+# does not work with extended chars like 'zmø.biz'
+secured_common_name:    "example.com"
+secured_host_name:      "www.{{ secured_common_name }}"
+
+secured_admin_email:    "admin@{{ secured_common_name }}"
+secured_org_name:       ""
+
+# Staging by default
+# secured_certbot_server: "https://acme-staging-v02.api.letsencrypt.org/directory"
+secured_certbot_server: "https://acme-v02.api.letsencrypt.org/directory"

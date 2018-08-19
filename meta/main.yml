@@ -1,0 +1,21 @@
+galaxy_info:
+  author: Derek Merck
+  description: Setup ssl self-signed or certbot SSL certficates for https.
+
+  role_name: secured
+
+  license: MIT
+
+  min_ansible_version: 2.4
+
+  galaxy_tags:
+  - ssl
+  - certbot
+
+# TODO: Could use nginx-docker a dep if certbot?
+dependencies:
+  - role: geerlingguy.docker
+    when: secured_cert_type == "certbot"
+  - role: geerlingguy.pip
+    pip_install_packages: docker
+    when: secured_cert_type == "certbot"

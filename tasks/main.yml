@@ -1,0 +1,35 @@
+---
+# tasks file for secured
+
+- name: Install packages
+  package:
+    name: "{{ item }}"
+    state: present
+  become: yes
+  with_items:
+    - python-openssl
+
+- name: Make sure ssl directories exist
+  file:
+    path: "{{ secured_cert_dir }}/{{ item }}"
+    state: directory
+  become: yes
+  with_items:
+    - private     # keys
+    - crt         # cerficates
+
+# No cert yet
+- name: Do self-signed bootstrap
+  include_tasks: selfsigned-play.yml
+  when: secured_cert_type == "selfsigned"
+
+# Already has cert
+- name: Do certbot create or renew
+  include_tasks: certbot-play.yml
+  when: secured_cert_type == "certbot"
+
+# Broken --->
+# - name: Do ansible letsencrypt
+#  include_tasks: letsencrypt-play.yml
+#  when: secured_cert_type == 'letsencrypt'
+# < ---

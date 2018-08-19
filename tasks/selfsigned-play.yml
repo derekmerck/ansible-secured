@@ -1,0 +1,31 @@
+---
+
+# Create a self-signed certificate
+
+- name: Add csr directory
+  file:
+    path: "{{ secured_cert_dir }}/csr"
+    state: directory
+  become: yes
+
+- name: Create private key
+  openssl_privatekey:
+    path: "{{secured_cert_dir}}/private/{{secured_host_name}}.pem"
+  become: yes
+
+- name: Create CSR
+  openssl_csr:
+    path:            "{{secured_cert_dir}}/csr/{{secured_host_name}}.csr"
+    privatekey_path: "{{secured_cert_dir}}/private/{{secured_host_name}}.pem"
+    emailAddress:    "{{ secured_admin_email | default('') }} "
+    organizationName: "{{ secured_org_name   | default('') }} "
+    common_name:     "{{ secured_host_name }}"
+  become: yes
+
+- name: Create self-signed cert for bootstrapping
+  openssl_certificate:
+    provider:        "selfsigned"
+    csr_path:        "{{ secured_cert_dir }}/csr/{{ secured_host_name }}.csr"
+    privatekey_path: "{{ secured_cert_dir }}/private/{{ secured_host_name }}.pem"
+    path:            "{{ secured_cert_dir }}/crt/{{ secured_host_name }}.pem"
+  become:            yes
