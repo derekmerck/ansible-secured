@@ -2,6 +2,7 @@
 # defaults file for secured
 
 config_dir: "/config"
+logger:     "json-file"
 
 secured_cert_type:      "selfsigned"
 secured_base_config_dir: "/config"
