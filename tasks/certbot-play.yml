@@ -13,14 +13,14 @@
 
 - name: Run certbot in docker
   docker_container:
-    name: certbot
+    name:  certbot
     image: certbot/certbot:latest
     volumes:
       - "/etc/letsencrypt:/etc/letsencrypt"
       - "/var/lib/letsencrypt:/var/lib/letsencrypt"
       - "{{ secured_cert_dir }}:{{ secured_cert_dir }}"
     # Add "--force-renewal" to move from staging to production
-    command: "certonly --webroot --email {{ secured_admin_email }} -d {{ secured_host_name }} -w {{ secured_cert_dir }} -n --agree-tos --server {{ secured_certbot_server }}"
+    command: "{{ secured_cb_command }}"
     state: started
     env:
       TZ: America/New_York
@@ -28,7 +28,7 @@
 - name: Wait on certbot to result
   command: docker wait certbot
 
-- name: Copy the certbot cert to the nginx folder
+- name: Copy the certbot cert to the certs folder
   copy:
     src: "/etc/letsencrypt/live/{{ secured_host_name }}/fullchain.pem"
     dest: "{{ secured_cert_dir }}/crt/{{ secured_host_name }}.pem"

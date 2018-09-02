@@ -2,19 +2,34 @@
 # defaults file for secured
 
 config_dir: "/config"
-logger:     "json-file"
+# data_dir:  "/data"
+# logger:     "json-file"
+common_name: "example.com"
+public_host_name: "www"
 
 secured_cert_type:      "selfsigned"
-secured_base_config_dir: "/config"
+
 secured_cert_dir:       "{{ config_dir }}/certs"
 
 # does not work with extended chars like 'zmø.biz'
-secured_common_name:    "example.com"
-secured_host_name:      "www.{{ secured_common_name }}"
+secured_common_name:    "{{ common_name }}"
+secured_public_host_name: "{{ public_host_name }}"
+secured_host_name:      "{{ secured_public_host_name }}.{{ secured_common_name }}"
 
 secured_admin_email:    "admin@{{ secured_common_name }}"
 secured_org_name:       ""
 
 # Staging by default
-# secured_certbot_server: "https://acme-staging-v02.api.letsencrypt.org/directory"
-secured_certbot_server: "https://acme-v02.api.letsencrypt.org/directory"
+secured_cb_staging:     True
+secured_cb_standalone:  True
+
+secured_cb_server: '{{ "https://acme-staging-v02.api.letsencrypt.org/directory" if secured_cb_staging
+                       else "https://acme-v02.api.letsencrypt.org/directory" }}'
+
+secured_cb_webroot_command: "certonly --webroot --email {{ secured_admin_email }} -d {{ secured_host_name }} -w {{ secured_cert_dir }} -n --agree-tos --server {{ secured_cb_server }}"
+secured_cb_standalone_command: "certonly --standalone --email {{ secured_admin_email }} -d {{ secured_host_name }} -w {{ secured_cert_dir }} -n --agree-tos --server {{ secured_cb_server }}"
+
+secured_cb_command: '{{ secured_cb_standalone_command if secured_cb_standalone else secured_cb_webroot_command }}'
+
+
+

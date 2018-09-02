@@ -29,3 +29,9 @@
     privatekey_path: "{{ secured_cert_dir }}/private/{{ secured_host_name }}.pem"
     path:            "{{ secured_cert_dir }}/crt/{{ secured_host_name }}.pem"
   become:            yes
+
+- name: Grab self-signed certs to add to other devices
+  fetch:
+    src: "{{ secured_cert_dir }}/crt/{{ secured_host_name }}.pem"
+    dest: secrets/crt/
+    flat: yes
