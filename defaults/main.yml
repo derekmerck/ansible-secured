@@ -1,27 +1,33 @@
 ---
 # defaults file for secured
 
-config_dir: "/config"
-# data_dir:  "/data"
-# logger:     "json-file"
-common_name: "example.com"
-public_host_name: "www"
+# Global defaults
+# -----------------------------
+config_dir:          "/config"
+# data_dir:          "/data"
+# logger:            "json-file"
+common_name:         "example.com"
+public_host_name:    "www"
+admin_email:         "admin@{{ secured_common_name }}"
+cert_type:           "selfsigned"
 
-secured_cert_type:      "selfsigned"
 
-secured_cert_dir:       "{{ config_dir }}/certs"
+# Service configuration
+# -----------------------------
+secured_cert_type:   "{{ cert_type }}"
+secured_cert_dir:    "{{ config_dir }}/certs"
 
 # does not work with extended chars like 'zmø.biz'
-secured_common_name:    "{{ common_name }}"
+secured_common_name: "{{ common_name }}"
 secured_public_host_name: "{{ public_host_name }}"
-secured_host_name:      "{{ secured_public_host_name }}.{{ secured_common_name }}"
+secured_host_name:   "{{ secured_public_host_name }}.{{ secured_common_name }}"
 
-secured_admin_email:    "admin@{{ secured_common_name }}"
-secured_org_name:       ""
+secured_admin_email: "{{ admin_email }}"
+secured_org_name:    ""
 
 # Staging by default
-secured_cb_staging:     True
-secured_cb_standalone:  True
+secured_cb_staging: True
+secured_cb_standalone: True
 
 secured_cb_server: '{{ "https://acme-staging-v02.api.letsencrypt.org/directory" if secured_cb_staging
                        else "https://acme-v02.api.letsencrypt.org/directory" }}'
