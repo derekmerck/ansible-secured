@@ -22,7 +22,7 @@
     common_name:     "{{ secured_host_name }}"
   become: yes
 
-- name: Create self-signed cert for bootstrapping
+- name: Create self-signed cert
   openssl_certificate:
     provider:        "selfsigned"
     csr_path:        "{{ secured_cert_dir }}/csr/{{ secured_host_name }}.csr"

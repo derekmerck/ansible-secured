@@ -1,22 +1,4 @@
 ---
-# CERTBOT tasks
-
-- name: Create .well-known with full perms for certbot
-  file:
-    path: "{{ secured_cert_dir }}/.well-known/acme-challenge"
-    state: directory
-    mode: 0777
-  become: yes
-  when: secured_cb_challenge == "webroot"
-
-- name: Create dns .ini file for certbot
-  template:
-    src:  "dns_challenge.ini.j2"
-    dest: "{{ secured_cert_dir }}/dns_challenge.ini"
-    mode: 0600
-  become: yes
-  when: secured_cb_challenge == "do-dns"
-
 - name: Run certbot in docker
   docker_container:
     name:  certbot
@@ -25,25 +7,24 @@
       - "/etc/letsencrypt:/etc/letsencrypt"
       - "/var/lib/letsencrypt:/var/lib/letsencrypt"
       - '{{ "{}:{}".format( secured_cert_dir, secured_cert_dir) }}'
-    # Add "--force-renewal" to move from staging to production
     command: "{{ secured_cb_command }}"
     state: started
     env:
       TZ: America/New_York
+  delegate_to: localhost
 
 - name: Wait on certbot to result
   command: docker wait certbot
+  delegate_to: localhost
 
 - name: Copy the certbot cert to the certs folder
   copy:
     src: "/etc/letsencrypt/live/{{ secured_host_name }}/fullchain.pem"
     dest: "{{ secured_cert_dir }}/crt/{{ secured_host_name }}.pem"
-    remote_src: yes
-    force: yes
+    remote_src: no
 
-- name: Copy the certbot key to the nginx folder
+- name: Copy the certbot key to the private folder
   copy:
     src: "/etc/letsencrypt/live/{{ secured_host_name }}/privkey.pem"
     dest: "{{ secured_cert_dir }}/private/{{ secured_host_name }}.pem"
-    remote_src: yes
-    force: yes
+    remote_src: no

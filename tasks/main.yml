@@ -18,6 +18,11 @@
     - private     # keys
     - crt         # cerficates
 
+# Local certs
+- name: Do local cert copy
+  include_tasks: localcert_play.yml
+  when: secured_cert_type == "local"
+
 # No cert yet
 - name: Do self-signed bootstrap
   include_tasks: selfsigned-play.yml

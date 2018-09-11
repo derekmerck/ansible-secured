@@ -12,10 +12,11 @@ galaxy_info:
   - ssl
   - certbot
 
-# TODO: Could use nginx-docker a dep if certbot?
 dependencies:
   - role: geerlingguy.docker
-    when: secured_cert_type == "certbot"
+    when: certtype == "certbot"
+    tags: deps
   - role: geerlingguy.pip
     pip_install_packages: docker
-    when: secured_cert_type == "certbot"
+    when: certtype == "certbot"
+    tags: deps
