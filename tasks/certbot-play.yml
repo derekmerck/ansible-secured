@@ -25,7 +25,6 @@
       - "/etc/letsencrypt:/etc/letsencrypt"
       - "/var/lib/letsencrypt:/var/lib/letsencrypt"
       - '{{ "{}:{}".format( secured_cert_dir, secured_cert_dir) }}'
-    # Add "--force-renewal" to move from staging to production
     command: "{{ secured_cb_command }}"
     state: started
     env:
