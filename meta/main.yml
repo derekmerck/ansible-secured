@@ -14,9 +14,9 @@ galaxy_info:
 
 dependencies:
   - role: geerlingguy.docker
-    when: certtype == "certbot"
+    when: cert_type == "certbot"
     tags: deps
   - role: geerlingguy.pip
     pip_install_packages: docker
-    when: certtype == "certbot"
+    when: cert_type == "certbot"
     tags: deps
